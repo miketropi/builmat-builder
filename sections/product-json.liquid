@@ -23,12 +23,6 @@
 {% endfor %}
 <div id="PROPDUCT_JSON_CODE">
   {{ result | json }}
-  <!-- <script>
-    const productJSON = {{ product | json }};
-    const variant = {{ product.variants[0].metafields.builder_base | json }}
-    console.log(productJSON);
-    // console.log(variant);
-  </script> -->
 </div>
 {% schema %}
   {
