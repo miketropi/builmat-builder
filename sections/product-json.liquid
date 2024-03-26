@@ -1,29 +1,52 @@
 {%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
 {%- assign pageUrlWithHost = contentForQuerystring | split:'"pageurl":"' | last | split:'"' | first |
-   replace:'\/','/' | 
-   replace:'%20',' ' | 
-   replace:'\u0026','&'
+  replace:'\/','/' | 
+  replace:'%20',' ' | 
+  replace:'\u0026','&'
 -%}
 {% assign __urlParams = pageUrlWithHost | split: "?" | last %}
 {% assign __segments = __urlParams | split: "&" %}
+{% assign result = product %}
+
+{% comment %} Variant meta data {% endcomment %}
+{% assign BaseData = '' %}
+{% assign CabinetColourData = '' %}
+{% assign BenchtopSelectionData = '' %}
+{% assign TapholeSelectionData = '' %}
+{% assign AddonData = '' %}
+
 {% for __segment in __segments %}
   {% liquid  
     assign s_item = __segment | split: "="
     assign __key = s_item[0]
     assign __value = s_item[1]
-
+    
     case __key
       when 'variant'
         assign __vID = __value | plus : 0
-        assign result = product.variants | where: "id", __vID 
-      else
-        assign result = product
+        assign result = product.variants | where: "id", __vID
+
+        for variant in product.variants
+          if variant.id == __vID
+            assign BaseData = variant.metafields.builder_base
+            assign CabinetColourData = variant.metafields.cabinet_colour
+            assign BenchtopSelectionData = variant.metafields.benchtop_selection
+            assign TapholeSelectionData = variant.metafields.taphole_selection
+            assign AddonData = variant.metafields.addon
+          endif
+        endfor
+        
     endcase
   %}
 {% endfor %}
-<div id="PROPDUCT_JSON_CODE">
-  {{ result | json }}
-</div>
+
+<script id="PROPDUCT_JSON_CODE">{{ result | json }}</script>
+<script id="METADATA_BASE">{{ BaseData | json }}</script>
+<script id="METADATA_CABINETCOLOUR">{{ CabinetColourData | json }}</script>
+<script id="METADATA_BENCHTOPSELECTION">{{ BenchtopSelectionData | json }}</script>
+<script id="METADATA_TAPHOLESELECTION">{{ TapholeSelectionData | json }}</script>
+<script id="METADATA_ADDON">{{ AddonData | json }}</script>
+
 {% schema %}
   {
     "name": "Product Json",

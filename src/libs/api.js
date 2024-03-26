@@ -10,8 +10,8 @@ const getProductByUrl = async (url) => {
   return await __request_content(url)
 }
 
-const getProductVariantByUrl = async (vid) => {
-
+const getProductVariantByUrl = async (url) => {
+  return await __request_content(url)
 }
 
 export { getProductByUrl, getProductVariantByUrl }
